@@ -41,7 +41,17 @@ def build_welcome_message(user_fullname: str):
     return caption, video_file_id, reply_markup
 
 # Обработчик новых участников чата
+# Обработчик новых участников чата
 async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        # Удаляем системное сообщение о вступлении пользователя
+        await context.bot.delete_message(
+            chat_id=update.effective_chat.id,
+            message_id=update.message.message_id
+        )
+    except Exception as e:
+        logger.warning(f"Не удалось удалить системное сообщение: {e}")
+
     for member in update.message.new_chat_members:
         username = member.username or ""
         if "bot" in username.lower():
@@ -57,6 +67,17 @@ async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT
             caption=caption,
             reply_markup=reply_markup,
         )
+
+# Удаление уведомлений о выходе из чата
+async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await context.bot.delete_message(
+            chat_id=update.effective_chat.id,
+            message_id=update.message.message_id
+        )
+    except Exception as e:
+        logger.warning(f"Не удалось удалить сообщение о выходе: {e}")
+
 
 # Обработчик команды /website
 async def send_website_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -77,6 +98,7 @@ async def set_bot_commands():
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler))
+application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler))
 
 # Установка команд при запуске
 application.post_init = set_bot_commands

@@ -1,13 +1,12 @@
-import re
 from telegram import BotCommand
 import logging
 import os
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters, ChatMemberHandler, CommandHandler
 
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
+# Считываем токен из окружения
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Включаем логгирование
 logging.basicConfig(level=logging.INFO)

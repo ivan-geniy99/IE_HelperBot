@@ -28,7 +28,7 @@ application = ApplicationBuilder().token(BOT_TOKEN).build()
 def build_welcome_message(user_fullname: str):
     buttons = [
         InlineKeyboardButton("🛣 Roadmap", url="https://telegra.ph/Roadmap-05-31-2"),
-        InlineKeyboardButton("📄 Whitepaper", url="https://telegra.ph/Whitepaper-05-31"),
+        InlineKeyboardButton("📄 Whitepaper", url="https://telegra.ph/Whitepaper-06-03"),
         InlineKeyboardButton("👨‍👩‍👦‍👦 Our X", url="https://x.com/OG_IE_CTO"),
         InlineKeyboardButton("✅ Buy IE", url="https://raydium.io/swap/?inputMint=sol&outputMint=DfYVDWY1ELNpQ4s1CK5d7EJcgCGYw27DgQo2bFzMH6fA"),
     ]

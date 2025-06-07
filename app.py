@@ -114,9 +114,9 @@ async def send_lp_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def set_bot_commands():
     await application.bot.set_my_commands([
         BotCommand("website", "Visit the official website"),
-        BotCommand("LP", "Liquidity info and farming"),
+        BotCommand("lp", "Liquidity info and farming"),
     ])
-application.add_handler(CommandHandler("LP", send_lp_info))
+application.add_handler(CommandHandler("lp", send_lp_info))
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler))

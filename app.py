@@ -116,12 +116,11 @@ async def set_bot_commands():
         BotCommand("website", "Visit the official website"),
         BotCommand("LP", "Liquidity info and farming"),
     ])
-
+application.add_handler(CommandHandler("LP", send_lp_info))
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler))
-application.add_handler(CommandHandler("LP", send_lp_info))
 application.post_init = set_bot_commands
 
 @app.post(f"/{BOT_TOKEN}")
@@ -141,4 +140,4 @@ def root():
     return {"message": "Telegram bot is running!"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), reload=True)

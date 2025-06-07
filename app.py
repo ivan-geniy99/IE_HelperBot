@@ -78,15 +78,50 @@ async def send_website_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True,
     )
 
+async def send_lp_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info(f"Команда /LP вызвана пользователем: {update.effective_user.id}")
+    
+    image_url = "https://i.ibb.co/20yP0WrR/raydium-pic.png"
+
+    caption = (
+        "💧 *Provide Liquidity to the IE Pool on Raydium!*\n"
+        "Earn fees and farming rewards by adding liquidity.\n\n"
+        "🔽 Choose an action below:"
+    )
+    
+    buttons = [
+    [
+        InlineKeyboardButton("🤔 How to add Liquidity", url="https://telegra.ph/How-to-add-liquidity-06-07"),
+        InlineKeyboardButton("✅ Farming IE", url="https://telegra.ph/How-to-participate-in-IE-farming-06-07")
+    ],
+    [
+        InlineKeyboardButton("❔ FAQ", url="https://telegra.ph/FAQ-06-07-10"),
+        InlineKeyboardButton("➕ Add Liquidity", url="https://raydium.io/liquidity/increase/?mode=add&pool_id=E8iZHoRdr6uJEB1VtF6JJbRz286KAh3hw8BByUQcRFTs")
+    ]
+]
+
+    
+    reply_markup = InlineKeyboardMarkup(buttons)
+    
+    await update.message.reply_photo(
+        photo=image_url,
+        caption=caption,
+        parse_mode="Markdown",
+        reply_markup=reply_markup
+    )
+
+
 async def set_bot_commands():
     await application.bot.set_my_commands([
         BotCommand("website", "Visit the official website"),
+        BotCommand("LP", "Liquidity info and farming"),
     ])
 
 application.add_handler(CommandHandler("website", send_website_link))
-application.add_handler(MessageHandler(filters.Regex(r"(?i)\\b(web\\s?site|site)\\b"), send_website_link))
+application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler))
+application.add_handler(CommandHandler("LP", send_lp_info))
 application.post_init = set_bot_commands
 
 @app.post(f"/{BOT_TOKEN}")

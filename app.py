@@ -13,6 +13,9 @@ import uvicorn
 from stop_words import MESSAGE_REMOVE_PATTERN
 from contextlib import asynccontextmanager
 from urllib.parse import unquote
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 # Логгирование
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +23,8 @@ logger = logging.getLogger(__name__)
 
 # Переменные окружения
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Пример: https://yourname.amvera.app
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  
+TARGET_CHAT_ID = os.environ.get("TARGET_CHAT_ID")
 
 # Инициализация FastAPI и Telegram Bot
 application = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -31,6 +35,15 @@ async def lifespan(app: FastAPI):
     await application.initialize()
     await application.start()
     await set_bot_commands()
+
+    # Настройка планировщика
+    scheduler = AsyncIOScheduler()
+
+    #scheduler.add_job(send_vote_reminder, IntervalTrigger(hours=6)) ТЕСТ!
+    scheduler.add_job(send_vote_reminder, IntervalTrigger(minutes=5))
+    scheduler.add_job(send_good_morning, CronTrigger(hour=9, minute=0))
+
+    scheduler.start()
 
     yield
 
@@ -58,6 +71,33 @@ def build_welcome_message(user_fullname: str):
 
     return caption, video_file_id, reply_markup
 
+async def send_vote_reminder():
+    try:
+        keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("🗳 Vote on WTF", url="https://t.me/WTFTrendingBot?start=vote_DfYVDWY1ELNpQ4s1CK5d7EJcgCGYw27DgQo2bFzMH6fA"),
+                InlineKeyboardButton("🗳 Vote on Major BB", url="https://t.me/MajorBuyBot?start=vote_-1002366046946")
+            ]
+        ])
+
+        await application.bot.send_message(
+            chat_id=TARGET_CHAT_ID,
+            text="Keep voting, explorers! 😎",
+            reply_markup=keyboard
+        )
+        logger.info("Отправлено сообщение-напоминание о голосовании с кнопками.")
+    except Exception as e:
+        logger.error(f"Ошибка при отправке напоминания о голосовании: {e}")
+
+async def send_good_morning():
+    try:
+        await application.bot.send_message(
+            chat_id=TARGET_CHAT_ID,
+            text="Gm, explorers! 😛"
+        )
+        logger.info("Отправлено утреннее сообщение.")
+    except Exception as e:
+        logger.error(f"Ошибка при отправке утреннего сообщения: {e}")
 
 async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:

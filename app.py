@@ -10,6 +10,7 @@ from telegram.ext import (
     filters,
 )
 import uvicorn
+from stop_words import MESSAGE_REMOVE_PATTERN
 
 # Логгирование
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +27,7 @@ application = ApplicationBuilder().token(BOT_TOKEN).build()
 
 def build_welcome_message(user_fullname: str):
     buttons = [
-        InlineKeyboardButton("🚣 Roadmap", url="https://telegra.ph/Roadmap-05-31-2"),
+        InlineKeyboardButton("🛣 Roadmap", url="https://telegra.ph/Roadmap-05-31-2"),
         InlineKeyboardButton("📄 Whitepaper", url="https://telegra.ph/Whitepaper-06-03"),
         InlineKeyboardButton("👨‍👨‍👦 Our X", url="https://x.com/OG_IE_CTO"),
         InlineKeyboardButton("✅ Buy IE", url="https://raydium.io/swap/?inputMint=sol&outputMint=DfYVDWY1ELNpQ4s1CK5d7EJcgCGYw27DgQo2bFzMH6fA"),
@@ -68,6 +69,19 @@ async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT
             reply_markup=reply_markup,
         )
 
+async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message and update.message.text:
+        message_text = update.message.text
+        if MESSAGE_REMOVE_PATTERN.search(message_text):
+            try:
+                await context.bot.delete_message(
+                    chat_id=update.effective_chat.id,
+                    message_id=update.message.message_id
+                )
+                logger.info(f"Удалено сообщение пользователя {update.effective_user.id} по регулярке.")
+            except Exception as e:
+                logger.warning(f"Ошибка при удалении сообщения: {e}")
+
 
 async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -100,11 +114,11 @@ async def send_lp_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     buttons = [
         [
             InlineKeyboardButton("🤔 How to add Liquidity", url="https://telegra.ph/How-to-add-liquidity-06-07"),
-            InlineKeyboardButton("✅ Farming IE", url="https://telegra.ph/How-to-participate-in-IE-farming-06-07")
+            InlineKeyboardButton("👨‍🌾 Farming IE", url="https://telegra.ph/How-to-participate-in-IE-farming-06-07")
         ],
         [
             InlineKeyboardButton("❔ FAQ", url="https://telegra.ph/FAQ-06-07-10"),
-            InlineKeyboardButton("➕ Add Liquidity", url="https://raydium.io/liquidity/increase/?mode=add&pool_id=E8iZHoRdr6uJEB1VtF6JJbRz286KAh3hw8BByUQcRFTs")
+            InlineKeyboardButton("💰 Add Liquidity", url="https://raydium.io/liquidity/increase/?mode=add&pool_id=E8iZHoRdr6uJEB1VtF6JJbRz286KAh3hw8BByUQcRFTs")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
@@ -125,6 +139,7 @@ async def set_bot_commands():
 
 
 # Регистрация хендлеров
+application.add_handler(MessageHandler(filters.TEXT, delete_message_if_match))
 application.add_handler(CommandHandler("lp", send_lp_info))
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))

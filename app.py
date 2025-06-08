@@ -39,8 +39,7 @@ async def lifespan(app: FastAPI):
     # Настройка планировщика
     scheduler = AsyncIOScheduler()
 
-    #scheduler.add_job(send_vote_reminder, IntervalTrigger(hours=6)) ТЕСТ!
-    scheduler.add_job(send_vote_reminder, IntervalTrigger(minutes=5))
+    scheduler.add_job(send_vote_reminder, IntervalTrigger(hours=4))
     scheduler.add_job(send_good_morning, CronTrigger(hour=9, minute=0))
 
     scheduler.start()
@@ -162,7 +161,7 @@ async def send_lp_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     image_url = "https://i.ibb.co/20yP0WrR/raydium-pic.png"
     caption = (
-        "💧 *Provide Liquidity to the IE Pool on Raydium!*\n"
+        "💧 *Provide Liquidity to the IE Pool on Raydium!*\n\n"
         "Earn fees and farming rewards by adding liquidity.\n\n"
         "🔽 Choose an action below:"
     )

@@ -12,6 +12,7 @@ from telegram.ext import (
 import uvicorn
 from stop_words import MESSAGE_REMOVE_PATTERN
 from contextlib import asynccontextmanager
+from urllib.parse import unquote
 
 # Логгирование
 logging.basicConfig(level=logging.INFO)
@@ -163,7 +164,7 @@ application.post_init = set_bot_commands
 
 
 # Webhook endpoint
-@app.post(f"/{BOT_TOKEN}")
+@app.post(f"/{unquote(BOT_TOKEN)}")
 async def telegram_webhook(req: Request):
     data = await req.json()
     update = Update.de_json(data, application.bot)

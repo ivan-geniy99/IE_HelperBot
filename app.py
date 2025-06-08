@@ -133,6 +133,20 @@ application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, us
 application.post_init = set_bot_commands
 
 
+# Инициализация и запуск бота при старте FastAPI
+@app.on_event("startup")
+async def startup_event():
+    await application.initialize()
+    await application.start()
+    await set_bot_commands()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await application.stop()
+    await application.shutdown()
+
+
 # Webhook endpoint
 @app.post(f"/{BOT_TOKEN}")
 async def telegram_webhook(req: Request):

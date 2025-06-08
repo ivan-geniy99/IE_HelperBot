@@ -154,7 +154,7 @@ async def set_bot_commands():
 
 
 # Регистрация хендлеров
-#application.add_handler(MessageHandler(filters.TEXT, delete_message_if_match))
+application.add_handler(MessageHandler(filters.Regex(MESSAGE_REMOVE_PATTERN), delete_message_if_match))
 application.add_handler(CommandHandler("lp", send_lp_info))
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))

@@ -11,6 +11,7 @@ from telegram.ext import (
 )
 import uvicorn
 from stop_words import MESSAGE_REMOVE_PATTERN
+from contextlib import asynccontextmanager
 
 # Логгирование
 logging.basicConfig(level=logging.INFO)
@@ -21,9 +22,22 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL")  # Пример: https://yourname.amvera.app
 
 # Инициализация FastAPI и Telegram Bot
-app = FastAPI()
 application = ApplicationBuilder().token(BOT_TOKEN).build()
 
+# Lifespan manager
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await application.initialize()
+    await application.start()
+    await set_bot_commands()
+
+    yield
+
+    await application.stop()
+    await application.shutdown()
+
+# FastAPI app с lifespan
+app = FastAPI(lifespan=lifespan)
 
 def build_welcome_message(user_fullname: str):
     buttons = [
@@ -148,20 +162,6 @@ application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, us
 application.post_init = set_bot_commands
 
 
-# Инициализация и запуск бота при старте FastAPI
-@app.on_event("startup")
-async def startup_event():
-    await application.initialize()
-    await application.start()
-    await set_bot_commands()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await application.stop()
-    await application.shutdown()
-
-
 # Webhook endpoint
 @app.post(f"/{BOT_TOKEN}")
 async def telegram_webhook(req: Request):
@@ -186,4 +186,4 @@ def root():
 
 # Запуск приложения
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=int(os.environ.get("PORT", 80)), reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=int(os.environ.get("PORT", 80)))

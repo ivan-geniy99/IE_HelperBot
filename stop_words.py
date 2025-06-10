@@ -17,6 +17,11 @@ MESSAGE_REMOVE_PATTERN = re.compile(
     r"mass\sdm|"
     r"dm\snow|"
     r"crypto\spromo\sloaded|"
-    r"launching\ssoon|"
-    r"shill\sme\syour\sx100\sgem"
+    r"launch(ing)?\ssoon.?.?.?.?.?sol|"
+    r"shill\sme\syour\sx100\sgem|"
+    r"wif.?hat|"
+    r"from\s(the\s)?(team|dev|same\sdevs?)\swho|"
+    r"still\sthe\samerica.?party|"
+    r"wif.?h|"
+    r"t.me..\w{16}"
 )

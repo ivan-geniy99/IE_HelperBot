@@ -124,9 +124,9 @@ async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT
         )
 
 async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message and update.message.text:
-        message_text = update.message.text
-        if MESSAGE_REMOVE_PATTERN.search(message_text):
+    if update.message:
+        message_text = update.message.text or update.message.caption
+        if message_text and MESSAGE_REMOVE_PATTERN.search(message_text):
             try:
                 await context.bot.delete_message(
                     chat_id=update.effective_chat.id,

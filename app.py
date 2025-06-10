@@ -124,17 +124,23 @@ async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT
         )
 
 async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message:
-        message_text = update.message.text or update.message.caption
-        if message_text and MESSAGE_REMOVE_PATTERN.search(message_text):
-            try:
-                await context.bot.delete_message(
-                    chat_id=update.effective_chat.id,
-                    message_id=update.message.message_id
-                )
-                logger.info(f"Удалено сообщение пользователя {update.effective_user.id} по регулярке.")
-            except Exception as e:
-                logger.warning(f"Ошибка при удалении сообщения: {e}")
+    if not update.message:
+        return  # Нет сообщения — ничего не делаем
+
+    content = update.message.text or update.message.caption
+    if not content:
+        return  # Нет текста или подписи — не спам
+
+    if MESSAGE_REMOVE_PATTERN.search(content):
+        try:
+            await context.bot.delete_message(
+                chat_id=update.effective_chat.id,
+                message_id=update.message.message_id
+            )
+            logger.info(f"Удалено сообщение от пользователя {update.effective_user.id}: {repr(content)}")
+        except Exception as e:
+            logger.warning(f"Ошибка при удалении сообщения: {e}")
+
 
 
 async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -193,7 +199,7 @@ async def set_bot_commands():
 
 
 # Регистрация хендлеров
-application.add_handler(MessageHandler(filters.Regex(MESSAGE_REMOVE_PATTERN), delete_message_if_match))
+application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), block=False)
 application.add_handler(CommandHandler("lp", send_lp_info))
 application.add_handler(CommandHandler("website", send_website_link))
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))

@@ -138,12 +138,12 @@ async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_
                 message_id=update.message.message_id
             )
             logger.info(f"Удалено сообщение от пользователя {update.effective_user.id}: {repr(content)}")
+            return
         except Exception as e:
+            return
             logger.warning(f"Ошибка при удалении сообщения: {e}")
     else:
         return
-
-
 
 async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:

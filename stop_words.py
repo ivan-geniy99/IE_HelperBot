@@ -23,5 +23,30 @@ MESSAGE_REMOVE_PATTERN = re.compile(
     r"from\s(the\s)?(team|dev|same\sdevs?)\swho|"
     r"still\sthe\samerica.?party|"
     r"wif.?h|"
-    r"t.me..\w{16}"
+    r"t.me..\w{16}|"
+    r"i\swant\sto\sgive\s.{0,7}\ssol|"
+    r"check\smy\sbio|"
+    r"in\smy\sprivate"
 )
+
+# 44-символьный ID-паттерн
+ID_PATTERN = re.compile(r"\b([A-Za-z0-9]{44})\b")
+
+# Разрешённые ID (например, токен проекта)
+ALLOWED_IDS = {
+    "DfYVDWY1ELNpQ4s1CK5d7EJcgCGYw27DgQo2bFzMH6fA",
+    "HU9TSBH3HsY1GFAtCNsAX2B5jCvt7D8WFR29ioL54rgn",
+    "E8iZHoRdr6uJEB1VtF6JJbRz286KAh3hw8BByUQcRFTs"
+}
+
+def contains_blocked_id(text: str) -> bool:
+    """Проверка на 44-символьный ID, не входящий в белый список"""
+    matches = ID_PATTERN.findall(text)
+    for match in matches:
+        if match not in ALLOWED_IDS:
+            return True
+    return False
+
+def is_spam_message(text: str) -> bool:
+    """Возвращает True, если сообщение считается спамом"""
+    return MESSAGE_REMOVE_PATTERN.search(text) or contains_blocked_id(text)

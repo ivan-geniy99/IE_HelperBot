@@ -10,7 +10,7 @@ from telegram.ext import (
     filters,
 )
 import uvicorn
-from stop_words import MESSAGE_REMOVE_PATTERN
+from stop_words import is_spam_message, contains_blocked_id
 from contextlib import asynccontextmanager
 from urllib.parse import unquote
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -131,12 +131,13 @@ async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_
     if not content:
         return
 
-    # Явное исключение допустимых команд
+    # Исключаем разрешённые команды
     allowed_commands = ["/lp", "/website"]
-    if content.strip().split()[0].lower() in allowed_commands:
+    command = content.strip().split()[0].lower()
+    if command in allowed_commands and not contains_blocked_id(content):
         return
 
-    if MESSAGE_REMOVE_PATTERN.search(content):
+    if is_spam_message(content):
         try:
             await context.bot.delete_message(
                 chat_id=update.effective_chat.id,

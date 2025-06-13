@@ -124,12 +124,17 @@ async def new_chat_members_handler(update: Update, context: ContextTypes.DEFAULT
         )
 
 async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not update.message or content.startswith("/"):
-        return  # Нет сообщения — ничего не делаем
+    if not update.message:
+        return
 
     content = update.message.text or update.message.caption
     if not content:
-        return  # Нет текста или подписи — не спам
+        return
+
+    # Явное исключение допустимых команд
+    allowed_commands = ["/lp", "/website"]
+    if content.strip().split()[0].lower() in allowed_commands:
+        return
 
     if MESSAGE_REMOVE_PATTERN.search(content):
         try:
@@ -138,11 +143,8 @@ async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_
                 message_id=update.message.message_id
             )
             logger.info(f"Удалено сообщение от пользователя {update.effective_user.id}: {repr(content)}")
-            return
         except Exception as e:
-            return
             logger.warning(f"Ошибка при удалении сообщения: {e}")
-    else:
         return
 
 async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -26,7 +26,9 @@ MESSAGE_REMOVE_PATTERN = re.compile(
     r"t.me..\w{16}|"
     r"i\swant\sto\sgive\s.{0,7}\ssol|"
     r"check\smy\sbio|"
-    r"in\smy\sprivate"
+    r"in\smy\sprivate|"
+    r"my\sportfolio\schannel|"
+    r"(?=.*\bdesign\b)(?=.*\bdm\b)(?=.*\blogo\b)(?=.*\bsticker\b)"
 )
 
 # 44-символьный ID-паттерн

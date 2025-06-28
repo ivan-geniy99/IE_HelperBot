@@ -132,7 +132,7 @@ async def delete_message_if_match(update: Update, context: ContextTypes.DEFAULT_
         return
 
     # Исключаем разрешённые команды
-    allowed_commands = ["/lp", "/website"]
+    allowed_commands = ["/website"]
     command = content.strip().split()[0].lower()
     if command in allowed_commands and not contains_blocked_id(content):
         return
@@ -159,9 +159,15 @@ async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def send_website_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.info(f"Команда /website вызвана пользователем: {update.effective_user.id}")
     await update.message.reply_text(
         "🌐 [Link on Website](https://internet-explorercto.de/)",
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+    )
+
+async def send_content_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🤙 [Link on Content Group](https://t.me/Content_IE)",
         parse_mode="Markdown",
         disable_web_page_preview=True,
     )
@@ -198,18 +204,25 @@ async def send_lp_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def set_bot_commands():
     await application.bot.set_my_commands([
-        BotCommand("website", "Visit the official website"),
-        BotCommand("lp", "Liquidity info and farming"),
+        BotCommand("website", "Official website"),
+        BotCommand("content", "Check it out and share!"),
     ])
 
 
 # Регистрация хендлеров
-application.add_handler(CommandHandler("lp", send_lp_info), group=1)
-application.add_handler(CommandHandler("website", send_website_link), group=1)
-application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), group=3)
-application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link), group=2)
+#application.add_handler(CommandHandler("lp", send_lp_info), group=1) пока что убрал, потому что нет фармингов
+#Первая группа
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler), group=0)
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler), group=0)
+#Вторая группа
+application.add_handler(CommandHandler("website", send_website_link), group=1)
+application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link), group=1)
+application.add_handler(CommandHandler("content", send_content_group), group=1)
+application.add_handler(MessageHandler(filters.Regex(r"(?i)\bcontents?\b"), send_website_link), group=1)
+#Третья группа
+application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), group=2)
+
+
 application.post_init = set_bot_commands
 
 

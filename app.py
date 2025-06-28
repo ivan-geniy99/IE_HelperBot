@@ -204,12 +204,12 @@ async def set_bot_commands():
 
 
 # Регистрация хендлеров
-application.add_handler(CommandHandler("lp", send_lp_info))
-application.add_handler(CommandHandler("website", send_website_link))
-application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), block=False)
-application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link))
-application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler))
-application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler))
+application.add_handler(CommandHandler("lp", send_lp_info), group=1)
+application.add_handler(CommandHandler("website", send_website_link), group=1)
+application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), group=3)
+application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link), group=2)
+application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_chat_members_handler), group=0)
+application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, user_left_handler), group=0)
 application.post_init = set_bot_commands
 
 

@@ -2,7 +2,7 @@ import re
 
 MESSAGE_REMOVE_PATTERN = re.compile(
     r"(?i)"
-    r"pump\.fun|"
+    r"pump\.?fun|"
     r"\w{40}pump|"
     r"to\sjoin\sprivate\ssignal|"
     r"first\s10\speople\sto\sdm\si\swill|"

@@ -218,7 +218,7 @@ application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, us
 application.add_handler(CommandHandler("website", send_website_link), group=1)
 application.add_handler(MessageHandler(filters.Regex(r"(?i)\b(web\s?site|site)\b"), send_website_link), group=1)
 application.add_handler(CommandHandler("content", send_content_group), group=1)
-application.add_handler(MessageHandler(filters.Regex(r"(?i)\bcontents?\b"), send_website_link), group=1)
+application.add_handler(MessageHandler(filters.Regex(r"(?i)\bcontents?\b"), send_content_group), group=1)
 #Третья группа
 application.add_handler(MessageHandler(filters.ALL, delete_message_if_match), group=2)
 

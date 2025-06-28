@@ -29,7 +29,10 @@ MESSAGE_REMOVE_PATTERN = re.compile(
     r"in\smy\sprivate|"
     r"my\sportfolio\schannel|"
     r"(?=.*\bdesign\b)(?=.*\bdm\b)(?=.*\blogo\b)(?=.*\bstic?ker\b)|"
-    r"shill\sme"
+    r"shill\sme|"
+    r"buy\sused\ssolana\swallet|"
+    r"let.?s\sgo\smy\sbii?o|"
+    r"in\smy\sbii?o"
 
 )
 

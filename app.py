@@ -160,7 +160,7 @@ async def user_left_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def send_website_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🌐 [Link on Website](https://internet-explorercto.de/)",
+        "🌐 [Link on Website](https://internet-explorer.online/)",
         parse_mode="Markdown",
         disable_web_page_preview=True,
     )
